@@ -5,7 +5,7 @@ I thought it would be nice to collect and will just list my main ideas here:
 pretty self explantory
 ## Trends
 Seems kind of a branch off the stocks reason but cool enough
-## Tnadem with Hardware Projects
+## Tandem with Hardware Projects
 I won't have to pay into an api to do the work of fetching certain information when I eventualyl do create
 my magic mirror
 
