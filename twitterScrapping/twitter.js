@@ -21,7 +21,7 @@ async function twitterScrape(url) {
     let previousHeight;
 
     do {
-        previousHeight = await page.evaluate('document.body.scrolHeight');
+        previousHeight = await page.evaluate('document.body.scrollHeight');
         await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
         await page.waitForTimeout(2000);
     } while(await page.evaluate('document.body.scrollHeight') > previousHeight);
