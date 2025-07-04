@@ -1,16 +1,18 @@
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const {chromium} = require('playwright');
 
 url = 'https://x.com/home?lang=en';
 
-(async () =>{
+async function twitterScrape(url) {
     const browser = await chromium.launch({headless: false, slowMo: 50});
     const context = await browser.newContext({
         storageState: 'auth.json'
     });
     const page = await context.newPage();
 
-    await page.goto('https://x.com/search?q=stocks&src=typed_query');
+    await page.goto(url);
 
     await context.storageState({path:'auth.json'});
 
@@ -43,6 +45,22 @@ url = 'https://x.com/home?lang=en';
 
     console.log(tweets);
 
+    //save this information somewhere and label it by date
+
+    const now = new Date();
+
+    let saveDate = now.getDate().toString() +'-'+ (now.getMonth()+1).toString() +'-'+ now.getFullYear().toString();
+
+    const saveDir = path.join(__dirname, "results");
+    const saveFile = path.join(saveDir, saveDate+'.json');
+
+    fs.writeFileSync(saveFile, JSON.stringify(tweets, null, 2), 'utf-8');
+
     await browser.close();
 
-})();
+};
+
+twitterScrape(url);
+
+
+module.exports = twitterScrape;
