@@ -5,7 +5,7 @@ const {chromium} = require('playwright');
 url = 'https://www.reddit.com/r/stocks/';
 
 (async ()=>{
-    const browser = await chromium.launch({headless: false, slowMo: 50});
+    const browser = await chromium.launch({headless: false});
     const context = await browser.newContext({
         storageState: 'auth.json'
     });
@@ -20,15 +20,22 @@ url = 'https://www.reddit.com/r/stocks/';
 
     let previousHeight;
 
-    do{
+    let stopCount = 10;
+
+    let scrollCount = 0;
+
+    do{ 
+
+        scrollCount +=1;
+
         previousHeight = await page.evaluate('document.body.scrollHeight');
-        await page.evaluate('window.scrollTo(0, document.body.scrollheight)');
-        await page.waitForTimeout(5000);
-    } while (await page.evaluate('document.body.scrollHeight') > previousHeight);
+        await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+        await page.waitForTimeout(2000);
+    } while (await page.evaluate('document.body.scrollHeight') > previousHeight && scrollCount < stopCount);
 
     const redditPost = await page.$$eval('article', articles =>{
         articles.map(article=>{
-            const text = article.innerText;
+            const text = article.querySelector('a')?.innterText || "";
 
             return {
                 post : text
@@ -37,6 +44,8 @@ url = 'https://www.reddit.com/r/stocks/';
     });
 
     console.log(redditPost);
+
+    await page.pause();
 
     browser.close();
 
