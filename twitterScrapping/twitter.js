@@ -6,7 +6,7 @@ const {chromium} = require('playwright');
 url = 'https://x.com/home?lang=en';
 
 async function twitterScrape(url) {
-    const browser = await chromium.launch({headless: false, slowMo: 50});
+    const browser = await chromium.launch({headless: false});
     const context = await browser.newContext({
         storageState: 'auth.json'
     });
@@ -20,13 +20,13 @@ async function twitterScrape(url) {
 
     let previousHeight;
 
+    let seenTweets = new Set();
+    let allTweets = []
+
     do {
         previousHeight = await page.evaluate('document.body.scrollHeight');
-        await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-        await page.waitForTimeout(2000);
-    } while(await page.evaluate('document.body.scrollHeight') > previousHeight);
 
-    const tweets = await page.$$eval('article', articles =>
+        const tweets = await page.$$eval('article', articles =>
         articles.map(article =>{
 
             const text = article.innerText;
@@ -40,10 +40,19 @@ async function twitterScrape(url) {
                 videos: video
             };
 
-        })
-    );
+        }));
 
-    console.log(tweets);
+        tweets.forEach(tweet=>{
+            if(!seenTweets.has(tweet.text)){
+                seenTweets.add(tweet.text);
+                allTweets.push(tweet);
+            };
+        })
+
+        await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+        await page.waitForTimeout(2000);
+    } while(await page.evaluate('document.body.scrollHeight') > previousHeight);
+
 
     //save this information somewhere and label it by date
 
@@ -54,7 +63,7 @@ async function twitterScrape(url) {
     const saveDir = path.join(__dirname, "results");
     const saveFile = path.join(saveDir, saveDate+'.json');
 
-    fs.writeFileSync(saveFile, JSON.stringify(tweets, null, 2), 'utf-8');
+    fs.writeFileSync(saveFile, JSON.stringify(allTweets, null, 2), 'utf-8');
 
     await browser.close();
 
