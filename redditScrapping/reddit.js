@@ -20,7 +20,7 @@ url = 'https://www.reddit.com/r/stocks/';
 
     let previousHeight;
 
-    let stopCount = 2;
+    let stopCount = 1;
 
     /*
 
@@ -32,32 +32,49 @@ url = 'https://www.reddit.com/r/stocks/';
 
     */
 
+    let redditPosts = new Set();
+
     let scrollCount = 0;
-    console.log(testvar);
     do{ 
 
         scrollCount +=1;
 
+        newPosts = await page.$$eval('article', articles =>{
+        
+        return articles.map(article=>article.innerText.trim())
+        .filter(text => text.length > 0);
+        
+        /* This is the target function, but not the complete answer
+        let meh = [];
+
+        for( x of articles){
+            meh.push(x.innerText);
+        }
+
+        return meh;
+        */
+        });
+
+        newPosts.forEach(post=>redditPosts.add(post));
+
         previousHeight = await page.evaluate('document.body.scrollHeight');
         await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
 
-        await page.waitForTimeout(5000);
+        await page.waitForTimeout(2000);
 
     } while (await page.evaluate('document.body.scrollHeight') > previousHeight && scrollCount < stopCount);
 
-    const redditPost = await page.$$eval('article', articles =>{
-        articles.map(article=>{
-            const text = article.innerText;
+    const redditPostsArray = [...redditPosts];
 
-            return {
-                post : text
-            };
-        });
-    });
+    console.log(redditPosts);
 
-    console.log(typeof(redditPost));
+    const now = new Date();
+
+    let saveDate = now.getDate().toString() +'-'+ (now.getMonth()+1).toString() +'-'+ now.getFullYear().toString();
     
-    await page.pause();
+    const saveDir = path.join(__dirname, "results");
+    const saveFile = path.join(saveDir, saveDate+'.json');
+    fs.writeFileSync(saveFile, JSON.stringify(redditPostsArray, null, 2), 'utf-8');
 
     browser.close();
 
