@@ -20,7 +20,7 @@ url = 'https://www.reddit.com/r/stocks/';
 
     let previousHeight;
 
-    let stopCount = 1;
+    let stopCount = 5;
 
     /*
 
@@ -32,30 +32,44 @@ url = 'https://www.reddit.com/r/stocks/';
 
     */
 
-    let redditPosts = new Set();
+    let redditSet = new Set();
 
+    let redditPosts = []
+
+
+    //to limit amount of scrolling since it will just keep going on reddit
     let scrollCount = 0;
     do{ 
 
         scrollCount +=1;
 
-        newPosts = await page.$$eval('article', articles =>{
+        let posts = await page.$$eval('article', articles =>{
         
-        return articles.map(article=>article.innerText.trim())
-        .filter(text => text.length > 0);
-        
-        /* This is the target function, but not the complete answer
-        let meh = [];
+        //the hard part here was to make sure I would get the correct img, unforutantely will require more work
+        //but since as of now the reddit posts I'm scrapping doesn't even have images in their posts its fine as is for now
 
-        for( x of articles){
-            meh.push(x.innerText);
-        }
+        return articles.map(article=>{
+            const postText = article.innerText.split('\n').map(line=>line.trim()).filter(line=>line.length>0);
+            const imgs = Array.from(article.querySelectorAll('img'));
+            imgs.shift();
+            imgs.map(img=>img.src);
 
-        return meh;
-        */
+            return {
+                text : postText,
+                images : imgs
+            };
+
         });
 
-        newPosts.forEach(post=>redditPosts.add(post));
+        });
+
+        posts.forEach(post=>{
+            const key = post.text.join('|');
+            if(!redditSet.has(key)){
+                redditSet.add(key);
+                redditPosts.push(post);
+            };
+        });
 
         previousHeight = await page.evaluate('document.body.scrollHeight');
         await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
@@ -63,8 +77,6 @@ url = 'https://www.reddit.com/r/stocks/';
         await page.waitForTimeout(2000);
 
     } while (await page.evaluate('document.body.scrollHeight') > previousHeight && scrollCount < stopCount);
-
-    const redditPostsArray = [...redditPosts];
 
     console.log(redditPosts);
 
@@ -74,7 +86,7 @@ url = 'https://www.reddit.com/r/stocks/';
     
     const saveDir = path.join(__dirname, "results");
     const saveFile = path.join(saveDir, saveDate+'.json');
-    fs.writeFileSync(saveFile, JSON.stringify(redditPostsArray, null, 2), 'utf-8');
+    fs.writeFileSync(saveFile, JSON.stringify(redditPosts, null, 2), 'utf-8');
 
     browser.close();
 
