@@ -43,7 +43,7 @@ url = 'https://www.reddit.com/r/stocks/';
 
         scrollCount +=1;
 
-        let posts = await page.$$eval('article', articles =>{
+        let posts = await page.$$eval('shreddit-post', posts =>{
         
         //the hard part here was to make sure I would get the correct img, unforutantely will require more work
         //but since as of now the reddit posts I'm scrapping doesn't even have images in their posts its fine as is for now
@@ -51,17 +51,22 @@ url = 'https://www.reddit.com/r/stocks/';
         //ok grabbing the particular stuff is quite length and annoying but as a note to future me:
         //lets simplify how we are going to grab all the extra info:
         // after we grab article, you need to also grab shreddit-post, thats actually where evryhitng is kept (minus the image but I think this path should get us there);
-        //so in total we have to: document.quewrySelectorAll('article')[n]('shreddit-post').getAttribute('comment-count'); (where n is just the iteration of the post I'm currently on)
+        //so in total we have to: document.querySelectorAll('shreddit-post')[n].getAttribute('comment-count'); (where n is just the iteration of the post I'm currently on)
 
-        return articles.map(article=>{
-            const postText = article.innerText.split('\n').map(line=>line.trim()).filter(line=>line.length>0);
-            const imgs = Array.from(article.querySelectorAll('img'));
-            imgs.shift();
-            imgs.map(img=>img.src);
+        return posts.map(post=>{
+            const postText = post.getAttribute('post-title');
+            const comtcnt = post.getAttribute('comment-count');
+            const score = post.getAttribute('score');
+            const postDate = post.getAttribute('created-timestamp');
+            const link = post.getAttribute('content-href');
+
 
             return {
-                text : postText,
-                images : imgs
+                Title : postText,
+                'Comment Count' : comtcnt,
+                Score : score,
+                Date : postDate,
+                Link : link
             };
 
         });
@@ -69,9 +74,8 @@ url = 'https://www.reddit.com/r/stocks/';
         });
 
         posts.forEach(post=>{
-            const key = post.text.join('|');
-            if(!redditSet.has(key)){
-                redditSet.add(key);
+            if(!redditSet.has(post)){
+                redditSet.add(post);
                 redditPosts.push(post);
             };
         });
