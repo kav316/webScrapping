@@ -6,7 +6,7 @@ const {chromium} = require('playwright');
 url = 'https://x.com/home?lang=en';
 
 async function twitterScrape(url) {
-    const browser = await chromium.launch({headless: false});
+    const browser = await chromium.launch({headless: false, slowMo: 50});
     const context = await browser.newContext({
         storageState: 'auth.json'
     });
@@ -30,8 +30,13 @@ async function twitterScrape(url) {
 
         const tweets = await page.$$eval('article', articles =>
         articles.map(article =>{
-
-            const text = article.querySelector('[data-testid="tweetText"] span').innerText;
+            let text = 'N/A';
+            try {
+                text = article.querySelector('[data-testid="tweetText"] span').innerText;
+            } catch {
+                text = 'N/A';
+            }
+            
             
             //this section is dedicated to grabbing the metrics of the posts
 
