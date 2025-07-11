@@ -4,17 +4,20 @@ const {chromium} = require('playwright');
 
 url = 'https://www.reddit.com/r/stocks/';
 
-(async ()=>{
+async function redditScrape (){
+    const storagePath = path.join(__dirname, 'auth.json');
+
     const browser = await chromium.launch({headless: false});
     const context = await browser.newContext({
-        storageState: 'auth.json'
+        storageState: storagePath
     });
 
     const page = await context.newPage();
 
     await page.goto(url);
 
-    await context.storageState({path:'auth.json'});
+
+    await context.storageState({path:storagePath});
 
     await page.waitForSelector('article');
 
@@ -99,4 +102,6 @@ url = 'https://www.reddit.com/r/stocks/';
 
     browser.close();
 
-})();
+};
+
+module.exports = redditScrape;

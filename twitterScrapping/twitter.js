@@ -6,15 +6,18 @@ const {chromium} = require('playwright');
 url = 'https://x.com/home?lang=en';
 
 async function twitterScrape(url) {
+
+    const storagePath = path.join(__dirname, 'auth.json');
+
     const browser = await chromium.launch({headless: false, slowMo: 50});
     const context = await browser.newContext({
-        storageState: 'auth.json'
+        storageState: storagePath
     });
     const page = await context.newPage();
 
     await page.goto(url);
 
-    await context.storageState({path:'auth.json'});
+    await context.storageState({path:storagePath});
 
     await page.waitForSelector('article');
 
@@ -104,8 +107,6 @@ async function twitterScrape(url) {
     await browser.close();
 
 };
-
-twitterScrape(url);
 
 
 module.exports = twitterScrape;
