@@ -10,6 +10,9 @@ const redditURL = 'https://www.reddit.com/r/stocks/'
 twitterScrape(twitterURL);
 redditScrape(redditURL);
 
+const redditJsonDir = path.join(__dirname, 'redditScrapping', 'results');
+const twitterJsonDir = path.join(__dirname, 'twitterScrapping', 'results');
+
 
 
 //the combination and saving of all the different scrapping's
