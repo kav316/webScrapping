@@ -44,7 +44,7 @@ async function redditScrape (){
     let scrollCount = 0;
     do{ 
 
-        scrollCount +=1;
+        scrollCount +=20;
 
         let posts = await page.$$eval('shreddit-post', posts =>{
         
@@ -65,11 +65,11 @@ async function redditScrape (){
 
 
             return {
-                Title : postText,
-                'Comment Count' : comtcnt,
-                Score : score,
-                Date : postDate,
-                Link : link
+                text : postText,
+                'comment count' : comtcnt,
+                score : score,
+                date : postDate,
+                link : link
             };
 
         });
