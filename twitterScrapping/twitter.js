@@ -30,6 +30,9 @@ async function twitterScrape(url) {
         previousHeight = await page.evaluate('document.body.scrollHeight');
 
         //do: document.querySelectorAll('article') this is recommended against, but works for now
+        //also i just cant make a clean way to grab the links for twitter. They definitely do exist
+        //but the amount of effort I would need to find them, match them with the correct tweet
+        //a bit much for what kind of project this is as I don't really need the posts themselves
 
         const tweets = await page.$$eval('article', articles =>
         articles.map(article =>{
@@ -69,9 +72,9 @@ async function twitterScrape(url) {
             const video = Array.from(article.querySelectorAll('video')).map(video=>video.src);
 
             return {
-                Text : text,
-                Metrics : textMetrics,
-                Images: img,
+                text : text,
+                metrics : textMetrics,
+                images: img,
                 videos: video
             };
 
@@ -79,11 +82,11 @@ async function twitterScrape(url) {
 
         //remove dup tweets due to some mishap while scrolling
         //I'm not sure that this is necessary, but likely better
-        //and yes this is the only since of error check I have right now
+        //and yes this is the only kind of error check I have right now
 
         tweets.forEach(tweet=>{
-            if(!seenTweets.has(tweet.Text)){
-                seenTweets.add(tweet.Text);
+            if(!seenTweets.has(tweet.text)){
+                seenTweets.add(tweet.text);
                 allTweets.push(tweet);
             };
         });
