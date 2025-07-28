@@ -23,7 +23,7 @@ async function redditScrape (){
 
     let previousHeight;
 
-    let stopCount = 5;
+    let stopCount = 20;
 
     /*
 
@@ -44,7 +44,7 @@ async function redditScrape (){
     let scrollCount = 0;
     do{ 
 
-        scrollCount +=20;
+        scrollCount +=1;
 
         let posts = await page.$$eval('shreddit-post', posts =>{
         

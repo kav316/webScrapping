@@ -8,7 +8,10 @@ async function wordCount(givenPath){
         'and', 'or', 'but', 'at', 'by', 'it', 'this', 'that', 'from', 'as', 'be', 'has', 'have',
         'had', 'do', 'does', 'did', 'so', 'if', 'out', 'up', 'down', 'i', 'you', 'he', 'she', 'they',
         'we', 'my', 'your', 'our', 'their', 'not', 'me', 'his', 'her', 'them', 'its', 'what', 'why', 'will',
-        'which', 'when', 'than', 'going', 'could', 'after', 'how'
+        'which', 'when', 'than', 'going', 'could', 'after', 'how', 'would', 'said', 'there', 'youre', 'getting',
+        'get','can', 'no', 'those', 'didnt', 'im', 'him', 'can', 'who', 'more', 'just', 'about', 'these', 'even',
+        'been', 'into', 'should', 'asked', 'cant', 'got', 'before', 'each', 'went', 'go', 'went', '', 'only', 'off',
+        'any', 'theyre', 'take', 'over', 'dont', 'here', 'too', 'any', 'oh', 'other', 'back'
     ]);
 
     let contentArray = [];

@@ -1,4 +1,5 @@
-
-node_moodules
+node_modules
 twitterScrapping/auth.json
 redditScrapping/auth.json
+website/scrapedashboard/node_modules/*
+website/webBackend/.env
