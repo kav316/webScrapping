@@ -71,11 +71,18 @@ async function twitterScrape(url) {
             .map(img=>img.src);
             const video = Array.from(article.querySelectorAll('video')).map(video=>video.src);
 
+            let timeAnchor = article.querySelector('time')?.closest('a');
+
+            const link = timeAnchor
+                ? new URL(timeAnchor.getAttribute('href'), location.origin).href
+                : null;
+
             return {
                 text : text,
                 metrics : textMetrics,
                 images: img,
-                videos: video
+                videos: video,
+                postlink : link
             };
 
         }));
