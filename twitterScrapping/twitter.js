@@ -71,18 +71,27 @@ async function twitterScrape(url) {
             .map(img=>img.src);
             const video = Array.from(article.querySelectorAll('video')).map(video=>video.src);
 
+            //grabbing post time so that I can use that info to grab the post itself due to how twitter saves a post's link
+
             let timeAnchor = article.querySelector('time')?.closest('a');
 
             const link = timeAnchor
                 ? new URL(timeAnchor.getAttribute('href'), location.origin).href
                 : null;
 
+            //grabbing time of post because why not
+
+            const time = article.querySelector('time');
+
+            const postDate = time?.getAttribute('datetime') || null;
+
             return {
                 text : text,
                 metrics : textMetrics,
                 images: img,
                 videos: video,
-                postlink : link
+                postlink : link,
+                postdate : postDate
             };
 
         }));
