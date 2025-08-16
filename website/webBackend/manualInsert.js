@@ -1,8 +1,10 @@
 const supabase = require('./supabasecli');
 const {redditInsertInfo} = require('./redditInsertData');
 const {twitterInsertInfo} = require('./twitterInsertData');
+const {parseMetrics} = require('./utils/metricsParsing');
 const path = require('path');
 const fs = require('fs');
+
 
 const mainDirPath = path.join(__dirname, '..', '..');
 const redditDirPath = path.join(mainDirPath, 'redditScrapping');
@@ -17,7 +19,7 @@ async function manualInsert(chosenPath){
                 const fullPath = path.join(results, file);
                 redditParseInsert(fs.readFileSync(fullPath, 'utf-8'), file)
             }
-        } else {
+        } else if( chosenPath == twitterDirPath) {
             for(file of files){
                 const fullPath = path.join(results, file);
                 twitterParseInsert(fs.readFileSync(fullPath, 'utf-8'), file)
@@ -26,7 +28,7 @@ async function manualInsert(chosenPath){
     }
 }
 
-async function redditParseInsert(jsonobj, fileName){
+function redditParseInsert(jsonobj, fileName){
     const posts = JSON.parse(jsonobj);
 
     posts.forEach(file => {
@@ -76,7 +78,7 @@ async function redditParseInsert(jsonobj, fileName){
 
 }
 //change this one
-async function twitterParseInsert(jsonobj, fileName){
+function twitterParseInsert(jsonobj, fileName){
     const posts = JSON.parse(jsonobj);
 
     posts.forEach(file => {
@@ -119,32 +121,7 @@ async function twitterParseInsert(jsonobj, fileName){
 
 };
 
-function parseMetrics(metric) {
-  if (metric == null) return 0;
-
-  // normalize: string, lower, strip commas
-  let str = metric.toString().trim().toLowerCase().replace(/,/g, '');
-
-  // strip common labels (start of string) like "comments:", "retweets:", "likes:", "views:"
-  str = str.replace(/^(comments?|retweets?|likes?|views?)\s*:?\s*/i, '').trim();
-
-  // at this point we expect things like: "10k", "7.8m", "378m", "233", ""
-  if (str === '') return 0;
-
-  const match = str.match(/^(\d*\.?\d+)\s*([kmbg])?$/); // number + optional k/m/b/g
-  if (!match) return 0;
-
-  const value = parseFloat(match[1]);
-  const suffix = match[2];
-
-  switch (suffix) {
-    case 'k': return Math.round(value * 1_000);
-    case 'm': return Math.round(value * 1_000_000);
-    case 'b':
-    case 'g': return Math.round(value * 1_000_000_000);
-    default:  return Math.round(value);
-  }
-}
-
-
 manualInsert(twitterDirPath);
+manualInsert(redditDirPath);
+
+module.exports = {twitterParseInsert, redditParseInsert};

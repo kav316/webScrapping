@@ -1,4 +1,8 @@
 const supabase = require('./supabasecli');
+const {debugConnectivity} = require('./debugUtils/connectDebug')
+
+debugConnectivity(supabase);
+
 
 async function twitterInsertInfo(info){
     const {data, error} = await supabase

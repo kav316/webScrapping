@@ -125,6 +125,8 @@ async function twitterScrape(url) {
 
     await browser.close();
 
+    return saveFile;
+
 };
 
 

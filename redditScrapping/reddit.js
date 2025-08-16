@@ -100,7 +100,9 @@ async function redditScrape (){
     const saveFile = path.join(saveDir, saveDate+'.json');
     fs.writeFileSync(saveFile, JSON.stringify(redditPosts, null, 2), 'utf-8');
 
-    browser.close();
+    await browser.close();
+
+    return saveFile;
 
 };
 

@@ -4,14 +4,23 @@ const path = require('path');
 const twitterScrape = require('./twitterScrapping/twitter')
 const redditScrape = require('./redditScrapping/reddit');
 
+const singleFileInsert = require('./website/webBackend/singleFileInsert');
+
 const twitterURL = 'https://x.com/home?lang=en';
-const redditURL = 'https://www.reddit.com/r/stocks/'
+const redditURL = 'https://www.reddit.com/r/stocks/';
 
-twitterScrape(twitterURL);
-redditScrape(redditURL);
+//implement promise for the following async function, pretty close but timing won't do what it actually needs to do
 
-const redditJsonDir = path.join(__dirname, 'redditScrapping', 'results');
-const twitterJsonDir = path.join(__dirname, 'twitterScrapping', 'results');
+(async () =>{
+    const newTwitterFile = await twitterScrape(twitterURL);
+    const newRedditFile = await redditScrape(redditURL);
+
+    const redditJsonDir = path.join(__dirname, 'redditScrapping', 'results');
+    const twitterJsonDir = path.join(__dirname, 'twitterScrapping', 'results');
+
+    singleFileInsert("reddit", path.join(redditJsonDir, newRedditFile), newRedditFile);
+    singleFileInsert("twitter", path.join(twitterJsonDir, newTwitterFile), newTwitterFile);
+})();
 
 
 
